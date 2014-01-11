@@ -11,9 +11,9 @@ import put.ai.snort.game.TypicalBoard;
 
 public class OurPlayer extends Player {
     public static final int INF = Integer.MAX_VALUE;
-    public static final int MAX_DEPTH = 3;
+    public static final int MAX_DEPTH = 4;
 	
-    private Random random=new Random(0xdeadbeef);
+    private Random random=new Random(System.currentTimeMillis());
     
     private static int WEIGHT_ARRAY[][];
 
@@ -37,9 +37,9 @@ public class OurPlayer extends Player {
       int alpha = -INF;
       int beta = INF;
     	
-    	Move bestMove = null;
       int bestScore = -INF;
     	
+      List<Move> bestMoves = new ArrayList<Move>();
       List<Move> moves = brd.getMovesFor(getColor());
     	
       
@@ -48,20 +48,23 @@ public class OurPlayer extends Player {
     	  List<Move> moves_done = new ArrayList<Move>();
     		moves_done.add(move);
     	  
-    		if (bestMove == null)
-    		  bestMove = move;
-    		
     		int score = -negaScout(board, moves_done,
     		    alpha, beta, 0, getOpponent(getColor()));
         
+    		if (score == bestScore) {
+    		  bestMoves.add(move);
+    		} else
     		if (score > bestScore) {
-    		  bestMove = move;
+    		  bestMoves.clear();
+    		  bestMoves.add(move);
           bestScore = score;
-        }
-    	  
+    		}
+        if (bestMoves.isEmpty())
+          bestMoves.add(move);
+        
     	}
       
-    	return bestMove;
+    	return bestMoves.get(random.nextInt(bestMoves.size()));
     }
     
     private int center_score(Board board, Color player) {
