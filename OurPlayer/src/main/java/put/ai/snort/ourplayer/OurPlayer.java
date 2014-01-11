@@ -11,7 +11,7 @@ import put.ai.snort.game.TypicalBoard;
 
 public class OurPlayer extends Player {
     public static final int INF = Integer.MAX_VALUE;
-    public static final int MAX_DEPTH = 2;
+    public static final int MAX_DEPTH = 4;
 	
     private Random random=new Random(0xdeadbeef);
 
@@ -52,21 +52,27 @@ public class OurPlayer extends Player {
     	return bestMove;
     }
     
+    private int score(Board board, Color player) {
+      
+      
+      return random.nextInt();
+    }
+    
    
     private int negaScout(OurBoard board, List<Move> moves_done, 
         int alpha, int beta, int d, Color player ) { 
     
-      int a,b;
+      int a, b;
+      
+      TypicalBoard current_board = board.applyMoves(moves_done);
       
       if (d == MAX_DEPTH)
-        return random.nextInt();
+        return score(current_board, player);
       
       a = alpha;
 	    b = beta;
 	    
-	    List<Move> v = board.applyMoves(moves_done).getMovesFor(getColor());
-	    
-	    for (Move move : v) {
+	    for (Move move : current_board.getMovesFor(getColor())) {
 	        moves_done.add(move);
 	        
 	        int t = -negaScout(board, moves_done,
@@ -88,4 +94,23 @@ public class OurPlayer extends Player {
 
      return a;
    }
+    
+    private class OurBoard {
+      private TypicalBoard board_;
+      
+      public OurBoard(TypicalBoard board) {
+        board_ = board;
+      }
+      
+      public TypicalBoard applyMoves(List<Move> moves) {
+        TypicalBoard board = board_.clone();
+        
+        for (Move move : moves) {
+          board.doMove(move);
+        }
+        
+        return board;
+      }
+    }
+
 }
