@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package put.ai.snort.ourplayer;
 
 import java.util.List;
@@ -10,6 +6,7 @@ import java.util.Random;
 import put.ai.snort.game.Board;
 import put.ai.snort.game.Move;
 import put.ai.snort.game.Player;
+import put.ai.snort.game.TypicalBoard;
 import put.ai.snort.linesofaction.*;
 
 public class OurPlayer extends Player {
@@ -28,6 +25,7 @@ public class OurPlayer extends Player {
     }
 
     @Override
+<<<<<<< HEAD
     public Move nextMove(Board brd) {
         this.alpha = -INF;
         this.beta = INF;
