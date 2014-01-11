@@ -11,12 +11,25 @@ import put.ai.snort.game.TypicalBoard;
 
 public class OurPlayer extends Player {
     public static final int INF = Integer.MAX_VALUE;
-    public static final int MAX_DEPTH = 4;
+    public static int MAX_DEPTH = 3;
 	
     private Random random=new Random(System.currentTimeMillis());
     
     private static int WEIGHT_ARRAY[][];
 
+    
+    @Override
+    public void setTime(long time) {
+    	if (time >= 14000) {
+    		MAX_DEPTH = 4;
+    	} if (time >= 75000) {
+    		MAX_DEPTH = 5;
+    	}
+    	System.out.println(MAX_DEPTH);
+    	super.setTime(time);	
+    }
+    
+    
     @Override
     public String getName() {
         return "Vinci";
