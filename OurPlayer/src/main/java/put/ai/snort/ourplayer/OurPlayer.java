@@ -25,7 +25,6 @@ public class OurPlayer extends Player {
     }
 
     @Override
-<<<<<<< HEAD
     public Move nextMove(Board brd) {
         this.alpha = -INF;
         this.beta = INF;
