@@ -6,6 +6,7 @@ import java.util.Random;
 import put.ai.snort.game.Board;
 import put.ai.snort.game.Move;
 import put.ai.snort.game.Player;
+import put.ai.snort.game.TypicalBoard;
 import put.ai.snort.linesofaction.*;
 
 public class OurPlayer extends Player {
@@ -20,6 +21,10 @@ public class OurPlayer extends Player {
     @Override
     public Move nextMove(Board b) {
         List<Move> moves = b.getMovesFor(getColor());
+        
+        OurBoard board = new OurBoard((TypicalBoard) b);
+        
+        // negascout(bla, bla, board, nowa_lista)
         
         for (Move _move : moves) {
           LoAMove move = (LoAMove) _move;
