@@ -11,11 +11,20 @@ import put.ai.snort.game.TypicalBoard;
 
 public class OurPlayer extends Player {
     public static final int INF = Integer.MAX_VALUE;
-    public static final int MAX_DEPTH = 4;
+    public static final int MAX_DEPTH = 5;
 	
-    private Random random=new Random(System.currentTimeMillis());
+    private Random random = new Random(System.currentTimeMillis());
     
-    private static int WEIGHT_ARRAY[][];
+    private static int WEIGHT_ARRAY[][];/* = {
+      {0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 1, 1, 1, 1, 1, 1, 0},
+      {0, 1, 2, 2, 2, 2, 1, 0},
+      {0, 1, 2, 3, 3, 2, 1, 0},
+      {0, 1, 2, 3, 3, 2, 1, 0},
+      {0, 1, 2, 2, 2, 2, 1, 0},
+      {0, 1, 1, 1, 1, 1, 1, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0} 
+    };*/
 
     @Override
     public String getName() {
@@ -41,11 +50,11 @@ public class OurPlayer extends Player {
     	
       List<Move> bestMoves = new ArrayList<Move>();
       List<Move> moves = brd.getMovesFor(getColor());
-    	
+      OurBoard board = new OurBoard((TypicalBoard) brd);
+      List<Move> moves_done = new ArrayList<Move>();
       
     	for (Move move : moves) {
-    		OurBoard board = new OurBoard((TypicalBoard) brd);
-    	  List<Move> moves_done = new ArrayList<Move>();
+    	  moves_done.clear();
     		moves_done.add(move);
     	  
     		int score = -negaScout(board, moves_done,
@@ -59,42 +68,33 @@ public class OurPlayer extends Player {
     		  bestMoves.add(move);
           bestScore = score;
     		}
-        if (bestMoves.isEmpty())
-          bestMoves.add(move);
         
     	}
       
     	return bestMoves.get(random.nextInt(bestMoves.size()));
     }
     
-    private int center_score(Board board, Color player) {
-      int score = 0;
+    private int center_score(final Board board, final Color player) {
+      int score_a = 0;
+      int score_b = 0;
       
       for (int x = 0; x < board.getSize(); x++)
         for (int y = 0; y < board.getSize(); y++)
-          if (board.getState(x, y) == player)
-            score += WEIGHT_ARRAY[x][y];
+          if (board.getState(x, y) == Color.PLAYER1)
+            score_a += WEIGHT_ARRAY[x][y]; else
+          if (board.getState(x, y) == Color.PLAYER2)
+            score_b += WEIGHT_ARRAY[x][y];
       
-      return score;
+      return (player == Color.PLAYER1) ? (score_a - score_b) : (score_b - score_a);
     }
     
-    private int score(Board board, Color player) {
-     //if (board.getWinner() == player) {
-     //   return INF;
-     //} else 
-        int score = 0;
-      
-        score += center_score(board, player) - center_score(board, getOpponent(player));
-      
-        
-        return score;
-     //}
-      
+    private int score(final Board board, final Color player) {
+      return center_score(board, player);  
     }
     
    
-    private int negaScout(OurBoard board, List<Move> moves_done, 
-        int alpha, int beta, int d, Color player ) { 
+    private int negaScout(final OurBoard board, final List<Move> moves_done, 
+        int alpha, int beta, int d, final Color player ) { 
     
       int a, b;
       
@@ -106,7 +106,7 @@ public class OurPlayer extends Player {
       a = alpha;
 	    b = beta;
 	    
-	    for (Move move : current_board.getMovesFor(getColor())) {
+	    for (Move move : current_board.getMovesFor(player)) {
 	        moves_done.add(move);
 	        
 	        int t = -negaScout(board, moves_done,
