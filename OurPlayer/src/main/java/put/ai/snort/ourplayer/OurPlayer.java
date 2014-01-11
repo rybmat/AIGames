@@ -1,5 +1,6 @@
 package put.ai.snort.ourplayer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -10,65 +11,82 @@ import put.ai.snort.game.TypicalBoard;
 import put.ai.snort.linesofaction.*;
 
 public class OurPlayer extends Player {
-   // public Board brd;
-    public int INF = Integer.MAX_VALUE;
-    public int depth;
-    public byte Player;
-    public int alpha;
-    public int beta;
+    public static final int INF = Integer.MAX_VALUE;
+    public static final int MAX_DEPTH = 16;
 	
     private Random random=new Random(0xdeadbeef);
 
     @Override
     public String getName() {
-        return "Leo";
+        return "Vinci";
     }
 
     @Override
     public Move nextMove(Board brd) {
-        this.alpha = -INF;
-        this.beta = INF;
-        this.depth = 0;
-    
+      int alpha = -INF;
+      int beta = INF;
     	
     	Move bestMove = null;
-        int best = -INF;
-    	List<Move> moves = brd.getMovesFor(getColor());
+      int bestScore = -INF;
     	
-    	for(Move m : moves){
-    		Board b = brd.clone();
-    		b.doMove(m);
+      List<Move> moves = brd.getMovesFor(getColor());
+    	
+      
+    	for (Move move : moves) {
+    		OurBoard board = new OurBoard((TypicalBoard) brd);
+    	  List<Move> moves_done = new ArrayList<Move>();
+    		moves_done.add(move);
+    	  
     		if (bestMove == null)
-                bestMove = m;
-    		int score = -negaScout(b,alpha,beta,0,getOpponent(getColor()));
-            if (score > best){
-                    bestMove = m;
-                    best = score;
-            }
+    		  bestMove = move;
+    		
+    		int score = -negaScout(board, moves_done,
+    		    alpha, beta, 0, getOpponent(getColor()));
+        
+    		if (score > bestScore) {
+    		  bestMove = move;
+          bestScore = score;
+        }
+    	  
     	}
-        return bestMove;
+      
+    	return bestMove;
     }
     
    
-    private int negaScout( Board brd, int alpha, int beta, int d, Color player ){ 
-        int a,b;
-        if (d == this.depth)
-                return random.nextInt();
-        a = alpha;
+    private int negaScout(OurBoard board, List<Move> moves_done, 
+        int alpha, int beta, int d, Color player ) { 
+    
+      int a,b;
+      
+      if (d == MAX_DEPTH)
+        return random.nextInt();
+      
+      a = alpha;
 	    b = beta;
-	    List<Move> v = brd.getMovesFor(getColor());
-	    for (int i = 0; i< v.size(); i++){
-	        Board bd = brd.clone();
-	        Move m = v.get(i);
-	        bd.doMove(m);
-	        int t = - negaScout(bd,-b,-a,d+1,getOpponent(getColor()));
-	        if ( (t > a) && (t < beta) && (i > 0) && (d < this.depth -1))
-	                a = -negaScout(bd,-beta,-t,d+1,getOpponent(getColor()));
+	    
+	    List<Move> v = board.applyMoves(moves_done).getMovesFor(getColor());
+	    
+	    for (Move move : v) {
+	        moves_done.add(move);
+	        
+	        int t = -negaScout(board, moves_done,
+	            -b, -a, d+1, getOpponent(getColor()));
+	        
+	        if ( (t > a) && (t < beta) && (d < MAX_DEPTH - 1))
+	          a = -negaScout(board, moves_done,
+	              -beta, -t, d+1, getOpponent(getColor()));
+	        
+	        moves_done.remove(moves_done.size() - 1);
+	        
 	        a = Math.max(a,t);
+	        
 	        if (a >= beta)
-	                return a;
+	          return a;
+	        
 	        b = a + 1;
-    }
+	    }
+
     return a;
 }
 }
