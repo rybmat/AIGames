@@ -11,9 +11,11 @@ import put.ai.snort.game.TypicalBoard;
 
 public class OurPlayer extends Player {
     public static final int INF = Integer.MAX_VALUE;
-    public static final int MAX_DEPTH = 4;
+    public static final int MAX_DEPTH = 3;
 	
     private Random random=new Random(0xdeadbeef);
+    
+    private static int WEIGHT_ARRAY[][];
 
     @Override
     public String getName() {
@@ -22,6 +24,16 @@ public class OurPlayer extends Player {
 
     @Override
     public Move nextMove(Board brd) {
+      if (WEIGHT_ARRAY == null) {
+        WEIGHT_ARRAY = new int[brd.getSize()][brd.getSize()];
+        final int center = brd.getSize() / 2;
+        for (int x = 0; x < brd.getSize(); x++)
+          for (int y = 0; y < brd.getSize(); y++)
+            WEIGHT_ARRAY[x][y] = Math.max(x, y) >= center ? 
+                Math.min(x, Math.min(y, Math.min(brd.getSize()-1-x, brd.getSize()-1-y))) : 
+                Math.min(x, y);
+      }
+      
       int alpha = -INF;
       int beta = INF;
     	
@@ -52,10 +64,29 @@ public class OurPlayer extends Player {
     	return bestMove;
     }
     
+    private int center_score(Board board, Color player) {
+      int score = 0;
+      
+      for (int x = 0; x < board.getSize(); x++)
+        for (int y = 0; y < board.getSize(); y++)
+          if (board.getState(x, y) == player)
+            score += WEIGHT_ARRAY[x][y];
+      
+      return score;
+    }
+    
     private int score(Board board, Color player) {
+     //if (board.getWinner() == player) {
+     //   return INF;
+     //} else 
+        int score = 0;
       
+        score += center_score(board, player) - center_score(board, getOpponent(player));
       
-      return random.nextInt();
+        
+        return score;
+     //}
+      
     }
     
    
@@ -76,11 +107,11 @@ public class OurPlayer extends Player {
 	        moves_done.add(move);
 	        
 	        int t = -negaScout(board, moves_done,
-	            -b, -a, d+1, getOpponent(getColor()));
+	            -b, -a, d+1, getOpponent(player));
 	        
 	        if ( (t > a) && (t < beta) && (d < MAX_DEPTH - 1))
 	          a = -negaScout(board, moves_done,
-	              -beta, -t, d+1, getOpponent(getColor()));
+	              -beta, -t, d+1, getOpponent(player));
 	        
 	        moves_done.remove(moves_done.size() - 1);
 	        
