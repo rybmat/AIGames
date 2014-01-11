@@ -8,11 +8,10 @@ import put.ai.snort.game.Board;
 import put.ai.snort.game.Move;
 import put.ai.snort.game.Player;
 import put.ai.snort.game.TypicalBoard;
-import put.ai.snort.linesofaction.*;
 
 public class OurPlayer extends Player {
     public static final int INF = Integer.MAX_VALUE;
-    public static final int MAX_DEPTH = 16;
+    public static final int MAX_DEPTH = 2;
 	
     private Random random=new Random(0xdeadbeef);
 
@@ -87,6 +86,6 @@ public class OurPlayer extends Player {
 	        b = a + 1;
 	    }
 
-    return a;
-}
+     return a;
+   }
 }
