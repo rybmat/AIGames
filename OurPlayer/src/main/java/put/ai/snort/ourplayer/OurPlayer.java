@@ -87,22 +87,28 @@ public class OurPlayer extends Player {
     	return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
-    private int center_score(final Board board, final Color player) {
+    private int score(final Board board, final Color player) {
       int score_a = 0;
       int score_b = 0;
+      int count_a = 12;
+      int count_b = 12;
 
       for (int x = 0; x < board.getSize(); x++)
         for (int y = 0; y < board.getSize(); y++)
-          if (board.getState(x, y) == Color.PLAYER1)
-            score_a += WEIGHT_ARRAY[x][y]; else
-          if (board.getState(x, y) == Color.PLAYER2)
+          if (board.getState(x, y) == Color.PLAYER1) {
+            score_a += WEIGHT_ARRAY[x][y];
+            count_a--;
+          } else
+          if (board.getState(x, y) == Color.PLAYER2) {
             score_b += WEIGHT_ARRAY[x][y];
+            count_b--;
+          }
 
-      return (player == Color.PLAYER1) ? (score_a - score_b) : (score_b - score_a);
-    }
-
-    private int score(final Board board, final Color player) {
-      return center_score(board, player);
+      return (player == Color.PLAYER1) ? (
+              score_a - score_b + (count_a == 1 ? 10 : 0)
+          ) : (
+              score_b - score_a + (count_b == 1 ? 10 : 0)
+          );
     }
 
 
