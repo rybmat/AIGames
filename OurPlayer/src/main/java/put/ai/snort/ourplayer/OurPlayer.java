@@ -90,24 +90,24 @@ public class OurPlayer extends Player {
     private int score(final Board board, final Color player) {
       int score_a = 0;
       int score_b = 0;
-      int count_a = 12;
-      int count_b = 12;
+      int count_a = 0;
+      int count_b = 0;
 
       for (int x = 0; x < board.getSize(); x++)
         for (int y = 0; y < board.getSize(); y++)
           if (board.getState(x, y) == Color.PLAYER1) {
             score_a += WEIGHT_ARRAY[x][y];
-            count_a--;
+            count_a++;
           } else
           if (board.getState(x, y) == Color.PLAYER2) {
             score_b += WEIGHT_ARRAY[x][y];
-            count_b--;
+            count_b++;
           }
 
       return (player == Color.PLAYER1) ? (
-              score_a - score_b + (count_a == 1 ? 10 : 0)
+              score_a - score_b + (count_a == 1 ? 10 : (count_b < 6 ? -2 : 0))
           ) : (
-              score_b - score_a + (count_b == 1 ? 10 : 0)
+              score_b - score_a + (count_b == 1 ? 10 : (count_a < 6 ? -2 : 0))
           );
     }
 
