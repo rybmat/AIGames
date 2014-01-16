@@ -1,3 +1,8 @@
+/**
+ * Amadeusz Juskowiak 106453,
+ * Mateusz Rybarski 106572
+ */
+
 package put.ai.snort.ourplayer;
 
 import java.util.ArrayList;
