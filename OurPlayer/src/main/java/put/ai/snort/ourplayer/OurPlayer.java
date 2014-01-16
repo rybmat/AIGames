@@ -87,34 +87,6 @@ public class OurPlayer extends Player {
     	return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
-  /*  private int score(final Board board, final Color player) {
-      int score_a = 0;
-      int score_b = 0;
-      int count_a = 0;
-      int count_b = 0;
-      int sc = 0;
-
-      for (int x = 0; x < board.getSize(); x++)
-        for (int y = 0; y < board.getSize(); y++)
-          if (board.getState(x, y) == Color.PLAYER1) {
-            score_a += WEIGHT_ARRAY[x][y];
-            count_a++;
-          } else
-          if (board.getState(x, y) == Color.PLAYER2) {
-            score_b += WEIGHT_ARRAY[x][y];
-            count_b++;
-          }
-
-      sc = (player == Color.PLAYER1) ? (
-              score_a - score_b + (count_a == 1 ? 10 : (count_b < 6 ? -2 : 0))
-          ) : (
-              score_b - score_a + (count_b == 1 ? 10 : (count_a < 6 ? -2 : 0))
-          );
-      sc += squares(board, player);
-      return sc;
-    }*/
-    
-    
     private int score(final Board board, final Color player) {	//by ryba
     	float squares_a = 0;
     	float squares_b = 0;
@@ -210,12 +182,6 @@ public class OurPlayer extends Player {
 
       a = alpha;
 	    b = beta;
-	    
-	   /* if (current_board.getWinner() == player){
-	    	return INF;
-	    }else if(current_board.getWinner() == getOpponent(player)){
-	    	return -INF;
-	    }*/
 	    
 	    for (Move move : current_board.getMovesFor(player)) {
 	        moves_done.add(move);
