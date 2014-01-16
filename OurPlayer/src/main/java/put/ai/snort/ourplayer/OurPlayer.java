@@ -41,7 +41,7 @@ public class OurPlayer extends Player {
 
     @Override
     public String getName() {
-        return "Vinci";
+        return "Leo Vinci";
     }
 
     @Override
@@ -87,11 +87,12 @@ public class OurPlayer extends Player {
     	return bestMoves.get(random.nextInt(bestMoves.size()));
     }
 
-    private int score(final Board board, final Color player) {
+  /*  private int score(final Board board, final Color player) {
       int score_a = 0;
       int score_b = 0;
       int count_a = 0;
       int count_b = 0;
+      int sc = 0;
 
       for (int x = 0; x < board.getSize(); x++)
         for (int y = 0; y < board.getSize(); y++)
@@ -104,14 +105,99 @@ public class OurPlayer extends Player {
             count_b++;
           }
 
-      return (player == Color.PLAYER1) ? (
+      sc = (player == Color.PLAYER1) ? (
               score_a - score_b + (count_a == 1 ? 10 : (count_b < 6 ? -2 : 0))
           ) : (
               score_b - score_a + (count_b == 1 ? 10 : (count_a < 6 ? -2 : 0))
           );
+      sc += squares(board, player);
+      return sc;
+    }*/
+    
+    
+    private int score(final Board board, final Color player) {	//by ryba
+    	float squares_a = 0;
+    	float squares_b = 0;
+    	int tmp_count_a;
+    	int tmp_count_b;
+    	int square_score = 0;
+    	
+        int centr_score_a = 0;
+        int centr_score_b = 0;
+        int count_a = 0;
+        int count_b = 0;
+        int centr_score = 0;
+    	
+        
+    	if (board.getState(0, 0) == Color.PLAYER1) {
+            centr_score_a += WEIGHT_ARRAY[0][0];
+            count_a++;
+        } else if (board.getState(0, 0) == Color.PLAYER2) {
+            centr_score_b += WEIGHT_ARRAY[0][0];
+            count_b++;
+        }
+    	
+    	if (board.getState(0, 1) == Color.PLAYER1) {
+            centr_score_a += WEIGHT_ARRAY[0][1];
+            count_a++;
+        } else if (board.getState(0, 1) == Color.PLAYER2) {
+            centr_score_b += WEIGHT_ARRAY[0][1];
+            count_b++;
+        }
+    	
+    	if (board.getState(1, 0) == Color.PLAYER1) {
+            centr_score_a += WEIGHT_ARRAY[1][0];
+            count_a++;
+        } else if (board.getState(1, 0) == Color.PLAYER2) {
+            centr_score_b += WEIGHT_ARRAY[1][0];
+            count_b++;
+        }
+    	
+        for (int x = 1; x < board.getSize(); x++)
+            for (int y = 1; y < board.getSize(); y++) {
+            	tmp_count_a = 0;
+            	tmp_count_b = 0;
+            	if (board.getState(x-1, y-1) == Color.PLAYER1) {
+            		tmp_count_a++;
+	            } else if (board.getState(x-1, y-1) == Color.PLAYER2) {
+	                tmp_count_b++;
+	            }
+            	if (board.getState(x, y-1) == Color.PLAYER1) {
+            		tmp_count_a++;
+	            } else if (board.getState(x, y-1) == Color.PLAYER2) {
+	                tmp_count_b++;
+	            }
+            	if (board.getState(x-1, y) == Color.PLAYER1) {
+            		tmp_count_a++;
+	            } else if (board.getState(x-1, y) == Color.PLAYER2) {
+	                tmp_count_b++;
+	            }
+            	if (board.getState(x, y) == Color.PLAYER1) {
+            		tmp_count_a++;
+                    centr_score_a += WEIGHT_ARRAY[x][y];
+                    count_a++;
+	            } else if (board.getState(x, y) == Color.PLAYER2) {
+	                tmp_count_b++;
+	                centr_score_b += WEIGHT_ARRAY[x][y];
+	                count_b++;
+	            }
+            	
+            	squares_a += ( (tmp_count_a > 2) ? 1 : 0 );
+            	squares_b += ( (tmp_count_b > 2) ? 1 : 0 );
+            }
+        
+        centr_score = (player == Color.PLAYER1) ? (
+                centr_score_a - centr_score_b + (count_a == 1 ? 10 : (count_b < 6 ? -2 : 0))
+            ) : (
+            		centr_score_b - centr_score_a + (count_b == 1 ? 10 : (count_a < 6 ? -2 : 0))
+            );
+    	
+        square_score = (player == Color.PLAYER1) ? (int)( (squares_a/count_a) - (squares_b/count_b)) : (int)( (squares_b/count_b) - (squares_a/count_a) );
+         	
+        return centr_score + square_score;
     }
 
-
+    
     private int negaScout(final OurBoard board, final List<Move> moves_done,
         int alpha, int beta, int d, final Color player ) {
 
@@ -124,10 +210,16 @@ public class OurPlayer extends Player {
 
       a = alpha;
 	    b = beta;
-
+	    
+	   /* if (current_board.getWinner() == player){
+	    	return INF;
+	    }else if(current_board.getWinner() == getOpponent(player)){
+	    	return -INF;
+	    }*/
+	    
 	    for (Move move : current_board.getMovesFor(player)) {
 	        moves_done.add(move);
-
+	        
 	        int t = -negaScout(board, moves_done,
 	            -b, -a, d+1, getOpponent(player));
 
